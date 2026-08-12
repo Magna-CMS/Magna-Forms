@@ -1,0 +1,145 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Magna\Forms;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
+use Magna\Forms\Models\Form;
+use Magna\Forms\Models\Submission;
+use Magna\Forms\Notifications\SubmissionMail;
+
+/**
+ * What happens when the public posts a form: spam checks, validation
+ * derived from the form's own definition, storage, notification.
+ *
+ * Spam handling is deliberately quiet — a bot that learns which trap it
+ * tripped defeats the trap. A honeypot hit or an instant submission
+ * returns the same success the visitor would see, and stores nothing.
+ */
+class FormSubmissionHandler
+{
+    /** Field name of the honeypot the real form renders hidden. */
+    public const HONEYPOT = 'website_url';
+
+    /** Nothing human fills a form this fast. */
+    private const MIN_SECONDS = 2;
+
+    /**
+     * @return array{ok: bool, errors: array<string, list<string>>, message: string}
+     */
+    public function handle(Form $form, Request $request): array
+    {
+        $success = [
+            'ok' => true,
+            'errors' => [],
+            'message' => $form->success_message ?? 'Thanks — we got your message.',
+        ];
+
+        if ($this->looksAutomated($request)) {
+            return $success;
+        }
+
+        $fields = $form->normalizedFields();
+        $validator = Validator::make(
+            ['fields' => $request->input('fields', [])],
+            FormFields::rules($fields),
+            [],
+            $this->attributeNames($fields),
+        );
+
+        if ($validator->fails()) {
+            /** @var array<string, list<string>> $errors */
+            $errors = $validator->errors()->messages();
+
+            return ['ok' => false, 'errors' => $errors, 'message' => 'Please check the highlighted fields.'];
+        }
+
+        $submitted = $request->input('fields', []);
+        $values = FormFields::values($fields, is_array($submitted) ? $submitted : []);
+
+        if ($form->store_submissions) {
+            Submission::query()->create([
+                'form_id' => $form->id,
+                'data' => $values,
+                'ip_hash' => Submission::hashIp($request->ip()),
+            ]);
+        }
+
+        $this->notify($form, $values);
+
+        return $success;
+    }
+
+    private function looksAutomated(Request $request): bool
+    {
+        // Honeypot: a hidden field only a bot fills.
+        $honeypot = $request->input(self::HONEYPOT);
+        if (is_string($honeypot) && trim($honeypot) !== '') {
+            return true;
+        }
+
+        // Timing: the render timestamp is signed, so a bot cannot simply
+        // post an older one to pass the check.
+        $stamp = $request->input('_ts');
+        if (! is_string($stamp) || ! str_contains($stamp, '.')) {
+            return true;
+        }
+
+        [$issuedAt, $signature] = explode('.', $stamp, 2);
+        if (! ctype_digit($issuedAt) || ! hash_equals(self::signTimestamp((int) $issuedAt), $signature)) {
+            return true;
+        }
+
+        // The APP clock, not PHP's — one clock for issuing and checking,
+        // and one a test (or a frozen-time run) can move coherently.
+        return (now()->getTimestamp() - (int) $issuedAt) < self::MIN_SECONDS;
+    }
+
+    /** The signed render timestamp the form embeds. */
+    public static function timestampToken(): string
+    {
+        $now = now()->getTimestamp();
+
+        return $now.'.'.self::signTimestamp($now);
+    }
+
+    private static function signTimestamp(int $issuedAt): string
+    {
+        return hash_hmac('sha256', 'magna-forms:'.$issuedAt, (string) config('app.key'));
+    }
+
+    /**
+     * @param  list<array{handle: string, label: string, type: string, required: bool, options: list<string>}>  $fields
+     * @return array<string, string>
+     */
+    private function attributeNames(array $fields): array
+    {
+        $names = [];
+        foreach ($fields as $field) {
+            $names['fields.'.$field['handle']] = strtolower($field['label']);
+        }
+
+        return $names;
+    }
+
+    /** @param array<string, string> $values */
+    private function notify(Form $form, array $values): void
+    {
+        foreach ($form->notify_emails ?? [] as $address) {
+            if (! is_string($address) || filter_var($address, FILTER_VALIDATE_EMAIL) === false) {
+                continue;
+            }
+
+            try {
+                Mail::to($address)->send(new SubmissionMail($form->name, $values));
+            } catch (\Throwable $e) {
+                // A mail outage must not lose the submission or show the
+                // visitor an error — it is already stored.
+                report($e);
+            }
+        }
+    }
+}
