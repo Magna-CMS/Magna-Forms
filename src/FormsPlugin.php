@@ -45,7 +45,7 @@ class FormsPlugin extends Plugin implements RegistersAdminNavigation, RegistersB
             BlockDefinition::fromArray([
                 'handle' => 'form',
                 'label' => 'Form',
-                'icon' => 'heroicon-o-envelope',
+                'icon' => 'core:envelope',
                 'category' => 'site',
                 'fields' => [
                     ['handle' => 'heading', 'type' => 'text', 'label' => 'Heading', 'required' => false],
