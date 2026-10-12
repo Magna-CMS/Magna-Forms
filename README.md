@@ -144,8 +144,8 @@ Register the path repository in the root `composer.json` and require the package
 ```
 
 ```bash
-composer require magna/forms:@dev
-php artisan magna:plugin:enable magna/forms
+composer require magna-cms/forms:@dev
+php artisan magna:plugin:enable magna-cms/forms
 ```
 
 ## Quick start
