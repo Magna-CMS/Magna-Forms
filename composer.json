@@ -1,5 +1,5 @@
 {
-    "name": "magna/forms",
+    "name": "magna-cms/forms",
     "description": "Forms for Magna: build, place, collect.",
     "type": "magna-plugin",
     "license": "proprietary",
