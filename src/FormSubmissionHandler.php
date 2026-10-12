@@ -129,7 +129,7 @@ class FormSubmissionHandler
     private function notify(Form $form, array $values): void
     {
         foreach ($form->notify_emails ?? [] as $address) {
-            if (! is_string($address) || filter_var($address, FILTER_VALIDATE_EMAIL) === false) {
+            if (filter_var($address, FILTER_VALIDATE_EMAIL) === false) {
                 continue;
             }
 
