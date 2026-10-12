@@ -1,0 +1,27 @@
+# Static analysis for this plugin.
+#
+# The CMS's own phpstan.neon analyses core, never plugins-dev — so a plugin
+# only gets analysed if it carries its own config. Run from the CMS root,
+# which is where the autoloader and larastan live:
+#
+#   php bin/plugin-gates.php <vendor/package>
+#
+# The level is a ratchet: raise it when the code allows, never lower it,
+# and never add a baseline — errors get fixed, not filed.
+includes:
+    - ../../../vendor/larastan/larastan/extension.neon
+
+parameters:
+    # Probed 2026-10-12: the highest level this codebase currently passes.
+    # Floor pinned in core's PluginArchitectureTest; ratchet upward only.
+    level: 0
+
+    # Per-checkout cache, exactly like core's phpstan.neon.dist: without it
+    # the default shared system-temp cache is corrupted whenever two
+    # checkouts (main + a session worktree) analyse this plugin, and the
+    # symptom is phantom "return statement is missing" errors whose count
+    # changes run to run. Relative, so every checkout gets its own.
+    tmpDir: build/phpstan
+
+    paths:
+        - src
