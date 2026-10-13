@@ -11,12 +11,10 @@ use Magna\Blocks\Resolution\BlockDataResolver;
 use Magna\Contracts\RegistersAdminNavigation;
 use Magna\Contracts\RegistersBlocks;
 use Magna\Contracts\RegistersSettingsPages;
-use Magna\Contracts\RegistersSiteKitSections;
 use Magna\Forms\Blocks\FormBlockResolver;
 use Magna\Forms\Blocks\FormOptions;
 use Magna\Forms\Filament\Pages\FormsPage;
 use Magna\Forms\Filament\Pages\SubmissionsPage;
-use Magna\Forms\SiteKit\FormsSection;
 use Magna\Plugins\Plugin;
 
 /**
@@ -27,7 +25,7 @@ use Magna\Plugins\Plugin;
  * form appears wherever Pages puts it, styled by the active theme, which
  * is the whole point of contributing a block instead of a page.
  */
-class FormsPlugin extends Plugin implements RegistersAdminNavigation, RegistersBlocks, RegistersSettingsPages, RegistersSiteKitSections
+class FormsPlugin extends Plugin implements RegistersAdminNavigation, RegistersBlocks, RegistersSettingsPages
 {
     public function boot(): void
     {
@@ -77,17 +75,5 @@ class FormsPlugin extends Plugin implements RegistersAdminNavigation, RegistersB
     public function settingsPages(): array
     {
         return [FormsPage::class, SubmissionsPage::class];
-    }
-
-    /**
-     * Forms travel in the site kit: the form block selects by handle, so a
-     * promoted site must carry the forms its pages reference or it applies
-     * cleanly and renders a hole.
-     *
-     * @return list<FormsSection>
-     */
-    public function siteKitSections(): array
-    {
-        return [new FormsSection];
     }
 }
