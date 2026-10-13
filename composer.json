@@ -3,6 +3,11 @@
     "description": "Forms for Magna: build, place, collect.",
     "type": "magna-plugin",
     "license": "proprietary",
+    "homepage": "https://github.com/Magna-CMS/Magna-Forms",
+    "support": {
+        "issues": "https://github.com/Magna-CMS/Magna-Forms/issues",
+        "source": "https://github.com/Magna-CMS/Magna-Forms"
+    },
     "require": {
         "php": "^8.3",
         "magna-cms/plugin-sdk": "^1.0"
@@ -11,7 +16,5 @@
         "psr-4": {
             "Magna\\Forms\\": "src/"
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
