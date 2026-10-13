@@ -4,7 +4,8 @@
     "type": "magna-plugin",
     "license": "proprietary",
     "require": {
-        "php": "^8.3"
+        "php": "^8.3",
+        "magna-cms/plugin-sdk": "^1.0"
     },
     "autoload": {
         "psr-4": {
