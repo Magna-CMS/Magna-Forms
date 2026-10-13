@@ -53,6 +53,9 @@ BlockDefinition::fromArray([
 
 A form that has been deleted resolves to nothing: the page renders a gap, never an error.
 
+The block is rendered by [Magna Pages](https://github.com/Magna-CMS/Magna-Pages); install it to place a form on a page. Forms itself runs without it — the admin
+builder and the submissions inbox do not depend on the page builder.
+
 ## Fields and validation
 
 Eight field types, each with validation derived from the type:

@@ -2,11 +2,11 @@
     "name": "magna-cms/forms",
     "displayName": "Magna Forms",
     "description": "Forms for the site: build a form in the admin, drop it on any page with the form block, collect submissions with spam protection and email notification.",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "author": "Magna Team",
     "license": "proprietary",
     "compat": {
-        "magna": ">=1.4.8 <2.0",
+        "magna": ">=1.4.9 <2.0",
         "php": "^8.3"
     },
     "entry": "Magna\\Forms\\FormsPlugin",
