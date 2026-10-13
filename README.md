@@ -107,14 +107,6 @@ A **Forms** navigation group with two screens, each behind its own permission:
 | Forms | `forms.manage` | Create forms, edit fields, set notification addresses, submit label, success message, storage toggle |
 | Submissions | `forms.submissions` | Read and delete submissions, per form |
 
-## Site kits
-
-Forms travel in the site kit under the `forms:forms` section. The form block selects a form by
-handle, so a kit whose contact page uses the block carries the forms its pages reference —
-without this, the kit would apply cleanly and render a hole until someone hand-created the form
-on the target site. Kits upsert forms by handle; submissions deliberately do not travel — they
-are environment data, not the site.
-
 ## Requirements
 
 - PHP 8.3+
