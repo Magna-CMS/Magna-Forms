@@ -24,8 +24,11 @@ Magna Forms is a plugin for [Magna CMS](https://github.com/Magna-CMS). It adds t
   theme like every other block; the plugin ships no pages or layout of its own.
 - **A submissions inbox** — read what came in, delete what you no longer need.
 
-There is no JavaScript shipped to the visitor. The form is plain HTML, posted with the page's
-CSRF token, rendered and validated server-side.
+The form is plain HTML, rendered and validated server-side, and safe on a cached page. Magna
+Pages caches public pages for guests, so the form never bakes a CSRF token into its markup — that
+token would be the first visitor's, served to everyone after them. It renders an empty token
+field instead, and core's small form-token script fills it with the visitor's own token
+(`GET /_magna/form-token`) when they focus or submit the form.
 
 ## The form block
 
@@ -118,7 +121,8 @@ are environment data, not the site.
 ## Requirements
 
 - PHP 8.3+
-- Magna CMS ^1.0
+- Magna CMS 1.6.2 or later (below 2.0) — the release that ships the form-token endpoint and
+  the shared signed timestamp the form relies on
 
 ## Install
 

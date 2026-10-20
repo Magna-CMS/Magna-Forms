@@ -1,7 +1,9 @@
 {{--
     The form block. Everything is escaped; the honeypot is a real input
     hidden from people (not display:none on a wrapper a bot skips), and
-    the timestamp is the signed one the resolver issued.
+    the timestamp is the signed one the resolver issued. Both survive the
+    page cache: the stamp carries no session, and the CSRF token is the
+    visitor's own, fetched by core's magna::form-token component.
     A deleted form renders nothing.
 --}}
 @php
@@ -20,7 +22,10 @@
             <p class="magna-form__sent" role="status">{{ $sent }}</p>
         @else
             <form method="POST" action="{{ url('/forms/'.$form['handle']) }}" class="magna-form__form">
-                @csrf
+                {{-- Never @csrf: Pages caches this page for guests, so a baked
+                     token would be the first visitor's, posted by everyone
+                     after them. Each visitor fetches their own instead. --}}
+                <x-magna::form-token/>
                 <input type="hidden" name="_ts" value="{{ $form['timestamp'] }}">
 
                 {{-- Honeypot: labelled for screen readers, hidden from sight. --}}

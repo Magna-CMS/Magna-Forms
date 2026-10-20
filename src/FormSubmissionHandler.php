@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Magna\Forms\Models\Form;
 use Magna\Forms\Models\Submission;
 use Magna\Forms\Notifications\SubmissionMail;
+use Magna\Frontend\Forms\SignedFormTimestamp;
 
 /**
  * What happens when the public posts a form: spam checks, validation
@@ -26,6 +27,13 @@ class FormSubmissionHandler
 
     /** Nothing human fills a form this fast. */
     private const MIN_SECONDS = 2;
+
+    /**
+     * The signing scope of the render stamp. It is the prefix the plugin
+     * signed with before the stamp moved into core, so stamps already
+     * sitting in cached pages keep passing.
+     */
+    private const STAMP_PURPOSE = 'magna-forms';
 
     /**
      * @return array{ok: bool, errors: array<string, list<string>>, message: string}
@@ -83,32 +91,17 @@ class FormSubmissionHandler
 
         // Timing: the render timestamp is signed, so a bot cannot simply
         // post an older one to pass the check.
-        $stamp = $request->input('_ts');
-        if (! is_string($stamp) || ! str_contains($stamp, '.')) {
-            return true;
-        }
-
-        [$issuedAt, $signature] = explode('.', $stamp, 2);
-        if (! ctype_digit($issuedAt) || ! hash_equals(self::signTimestamp((int) $issuedAt), $signature)) {
-            return true;
-        }
-
-        // The APP clock, not PHP's — one clock for issuing and checking,
-        // and one a test (or a frozen-time run) can move coherently.
-        return (now()->getTimestamp() - (int) $issuedAt) < self::MIN_SECONDS;
+        return ! SignedFormTimestamp::passes(
+            $request->input(SignedFormTimestamp::FIELD),
+            self::STAMP_PURPOSE,
+            self::MIN_SECONDS,
+        );
     }
 
     /** The signed render timestamp the form embeds. */
     public static function timestampToken(): string
     {
-        $now = now()->getTimestamp();
-
-        return $now.'.'.self::signTimestamp($now);
-    }
-
-    private static function signTimestamp(int $issuedAt): string
-    {
-        return hash_hmac('sha256', 'magna-forms:'.$issuedAt, (string) config('app.key'));
+        return SignedFormTimestamp::issue(self::STAMP_PURPOSE);
     }
 
     /**
