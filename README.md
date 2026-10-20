@@ -7,9 +7,9 @@
 </p>
 
 <p align="center">
-  <img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-6366f1.svg">
+  <img alt="Version 0.2.0" src="https://img.shields.io/badge/version-0.2.0-6366f1.svg">
   <img alt="PHP ^8.3" src="https://img.shields.io/badge/php-%5E8.3-777bb4.svg">
-  <a href="https://github.com/Magna-CMS"><img alt="Magna CMS ^1.0" src="https://img.shields.io/badge/Magna%20CMS-%5E1.0-6366f1.svg"></a>
+  <a href="https://github.com/Magna-CMS"><img alt="Magna CMS 1.6.2+" src="https://img.shields.io/badge/Magna%20CMS-1.6.2%2B-6366f1.svg"></a>
   <img alt="License: proprietary" src="https://img.shields.io/badge/license-proprietary-orange.svg">
 </p>
 

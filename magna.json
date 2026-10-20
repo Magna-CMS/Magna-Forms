@@ -6,7 +6,7 @@
     "author": "Magna Team",
     "license": "proprietary",
     "compat": {
-        "magna": ">=1.5.0 <2.0",
+        "magna": ">=1.6.2 <2.0",
         "php": "^8.3"
     },
     "entry": "Magna\\Forms\\FormsPlugin",
