@@ -1,7 +1,7 @@
 <h1 align="center">Magna Forms</h1>
 
 <p align="center">
-  <strong>Forms for Magna CMS.</strong><br>
+  <strong>Magna Forms is a form-builder plugin for <a href="https://github.com/Magna-CMS/Magna">Magna CMS</a>.</strong><br>
   Build a form in the admin, drop it on any page with the form block, collect submissions —
   with spam protection and email notification built in.
 </p>
@@ -9,13 +9,13 @@
 <p align="center">
   <img alt="Version 0.2.0" src="https://img.shields.io/badge/version-0.2.0-6366f1.svg">
   <img alt="PHP ^8.3" src="https://img.shields.io/badge/php-%5E8.3-777bb4.svg">
-  <a href="https://github.com/Magna-CMS"><img alt="Magna CMS 1.6.2+" src="https://img.shields.io/badge/Magna%20CMS-1.6.2%2B-6366f1.svg"></a>
+  <a href="https://github.com/Magna-CMS/Magna"><img alt="Magna CMS 1.6.2+" src="https://img.shields.io/badge/Magna%20CMS-1.6.2%2B-6366f1.svg"></a>
   <img alt="License: proprietary" src="https://img.shields.io/badge/license-proprietary-orange.svg">
 </p>
 
 ---
 
-Magna Forms is a plugin for [Magna CMS](https://github.com/Magna-CMS). It adds three things:
+Magna Forms is a plugin for [Magna CMS](https://github.com/Magna-CMS/Magna). It adds three things:
 
 - **A form builder** in the admin panel — name a form, add typed fields, choose who gets
   notified and whether submissions are stored.
@@ -94,8 +94,8 @@ visitor would see, and nothing is stored:
 
 Clean submissions are stored (unless the form's *store submissions* toggle is off) and each
 address on the form's notification list receives an email. A mail outage never loses a
-submission or shows the visitor an error — the submission is already stored before mail is
-attempted.
+stored submission or shows the visitor an error — the submission is saved before mail is
+attempted, and a failed send is caught.
 
 The visitor's IP is stored **hashed** (HMAC with the app key) — enough to spot a flood, never
 a stored personal identifier. Submissions in the admin are read-and-delete: nothing edits a
@@ -132,12 +132,24 @@ On a site with marketplace installs available, install **Magna Forms** from the 
 in the admin panel and enable it. Enabling runs the plugin's migrations — no artisan step
 needed.
 
+### With Composer
+
+From the root of your Magna CMS installation:
+
+```bash
+composer require magna-cms/forms
+php artisan magna:plugin:enable magna-cms/forms
+```
+
+Enabling runs the plugin's migrations. You can also enable it from the Plugins screen instead
+of the second command.
+
 ### Dev-path install
 
 From the root of a Magna CMS checkout:
 
 ```bash
-git clone https://github.com/Magna-CMS/Magna-Forms.git plugins-dev/magna/forms
+git clone https://github.com/Magna-CMS/Magna-Forms.git plugins-dev/magna-cms/forms
 ```
 
 Register the path repository in the root `composer.json` and require the package:
@@ -145,7 +157,7 @@ Register the path repository in the root `composer.json` and require the package
 ```json
 {
     "repositories": [
-        { "type": "path", "url": "plugins-dev/magna/forms" }
+        { "type": "path", "url": "plugins-dev/magna-cms/forms" }
     ]
 }
 ```
@@ -154,6 +166,9 @@ Register the path repository in the root `composer.json` and require the package
 composer require magna-cms/forms:@dev
 php artisan magna:plugin:enable magna-cms/forms
 ```
+
+Magna only discovers plugins under `plugins-dev/` outside the `production` environment, so use
+this route for development and the Composer package for production sites.
 
 ## Quick start
 
@@ -170,9 +185,10 @@ submissions go with them, so export anything you need first.
 
 ## License
 
-Proprietary. © Magna Team. Not open source — do not redistribute.
+Proprietary (`"license": "proprietary"` in `composer.json` and `magna.json`). © Magna Team.
+Not open source — do not redistribute.
 
 ## Links
 
-- [Magna CMS](https://github.com/Magna-CMS) — the core
+- [Magna CMS](https://github.com/Magna-CMS/Magna) — the core
 - [Magna Pages](https://github.com/Magna-CMS/Magna-Pages) — the page builder the form block renders in
